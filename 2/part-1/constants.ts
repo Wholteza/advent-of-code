@@ -1,5 +1,5 @@
-export type Sequence = [number, number, string, string];
-export const sequences: Sequence[] = [
+export type RawSequence = [number, number, string, string];
+export const sequences: RawSequence[] = [
   [1, 7, "q", "qqqqxvqrkbqqztlqlzq"],
   [1, 3, "q", "cqbm"],
   [15, 16, "h", "hhhhhhhhhhhhhhbsh"],
