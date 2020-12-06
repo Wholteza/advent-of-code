@@ -1,42 +1,22 @@
-import fs from "fs";
+import { map } from "./parsed-input";
 
 const TREE = "#";
-const FREE = ".";
-const EMPTY = "";
-const SPLIT_REGEX = /(#|.)/;
-const X_VELOCITY = 1;
-const Y_VELOCITY = 3;
+const X_VELOCITY = 3;
+const Y_VELOCITY = 1;
 
-const rawInput: string = fs.readFileSync("raw.txt", "utf-8");
-const input: string[] = rawInput.split("\n");
-const map: string[][] = input.map((row) =>
-  row
-    .split(SPLIT_REGEX)
-    .reduce<string[]>(
-      (aggregate: string[], current: string): string[] =>
-        current === EMPTY ? aggregate : [...aggregate, current],
-      []
-    )
-);
+const getLoopedXPosition = (x: number) => x % map[0].length;
 
-const mountainYMax = map.length - 1;
-const mountainXMax = map[0].length - 1;
+const treeWasHit = (x: number, y: number): boolean => map[y][x] === TREE;
 
-const isNearTree = (x, y): boolean => {
-  const mapX = x % mountainXMax;
-  const leftIsTree = map[y][mapX === 0 ? mapX : mapX + 1] === TREE;
-  const rightIsTree = map[y][mapX + 1] === TREE;
-  return leftIsTree || rightIsTree;
-};
+const bottomOfSlope = map.length - 1;
+let amountOfTreesHit = 0;
+let xPos = 0;
+let yPos = 0;
 
-let amountOfTreePasses = 0;
-let meXPos = 0;
-let meYPos = 0;
-
-while (meYPos <= mountainYMax) {
-  isNearTree(meXPos, meYPos) && amountOfTreePasses++;
-  meXPos += X_VELOCITY;
-  meYPos += Y_VELOCITY;
+while (yPos <= bottomOfSlope) {
+  treeWasHit(getLoopedXPosition(xPos), yPos) && amountOfTreesHit++;
+  xPos += X_VELOCITY;
+  yPos += Y_VELOCITY;
 }
 
-console.log(amountOfTreePasses);
+console.log(amountOfTreesHit);

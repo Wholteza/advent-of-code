@@ -4,7 +4,7 @@
   "description": "",
   "main": "run.js",
   "scripts": {
-    "start": "tsc -p tsconfig.json && cp ./raw.txt ./build/ && node build/run.js",
+    "start": "tsc -p tsconfig.json && cp ./input ./build/ && node build/run.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
