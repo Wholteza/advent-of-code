@@ -25,3 +25,5 @@ export const getElfWithMostCalories = (elfs: Elf[]): Elf => {
 };
 
 export const sortElfsByMostCalories = (elfs: Elf[]): Elf[] => elfs.sort((a, b) => a.getTotalCalories()-b.getTotalCalories()).reverse()
+
+export const getSumOfElfs =(elfs: Elf[]) => elfs.reduce((sum, elf)=> sum + elf.getTotalCalories(), 0); 
