@@ -6,18 +6,12 @@ export const createElfsFromPuzzleInput = (backpackContentsSeparatedByNewline: st
   var backpackContentsSeparatedByDelimiter = backpackContentsSeparatedByNewline.split("\r\n");
   const elfs = backpackContentsSeparatedByDelimiter.reduce<Elf[]>(
     (elfs, currentBackpackItem): Elf[] => {
-      const startCreatingNextElf = () =>
-        (elfs = [new Elf(), ...elfs]);
-      if (!elfs.length) startCreatingNextElf();
-      if (currentBackpackItem === ELF_BACKPACK_DELIMITER) {
-        startCreatingNextElf();
-        return elfs;
-      }
-      const currentElf = elfs[0];
-      currentElf.addCalories(+currentBackpackItem);
+      if (currentBackpackItem === ELF_BACKPACK_DELIMITER) 
+        return [new Elf(), ...elfs];
+      elfs[0].addCalories(+currentBackpackItem);
       return elfs;
     },
-    []
+    [new Elf()]
   );
   return elfs;
 };
