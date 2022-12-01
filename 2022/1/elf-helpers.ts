@@ -22,7 +22,7 @@ export const createElfsFromPuzzleInput = (backpackContentsSeparatedByNewline: st
   return elfs;
 };
 
-export const getElfWithMostCalories = (elfs: Elf[]): Elf | undefined => {
+export const getElfWithMostCalories = (elfs: Elf[]): Elf => {
   return elfs.reduce<Elf>((elfWithMostCalories, currentElf) => {
     const currentElfHasMoreCalories = currentElf.getTotalCalories() > elfWithMostCalories.getTotalCalories()
     if (currentElfHasMoreCalories) elfWithMostCalories = currentElf;
