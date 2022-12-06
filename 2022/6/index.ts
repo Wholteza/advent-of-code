@@ -1,29 +1,41 @@
 import { readFileSync } from "fs";
 
-const detectUniqueSequence = (length: number) =>
-  rawInput.split("").reduce<string[]>((sequence, current) => {
-    const sequenceIsUnique = sequence.every(
-      (i) => sequence.filter((s) => s === i).length === 1
-    );
-    const sequenceIsAtMaxLength = sequence.length === length;
-    if (sequenceIsAtMaxLength) {
-      if (sequenceIsUnique) return sequence;
-      sequence = sequence.slice(1);
-    }
-    return [...sequence, current];
-  }, []);
+const detectSequenceOfUniqueCharacters = (
+  sequenceLength: number,
+  rawSignal: string
+) =>
+  rawSignal
+    .split("")
+    .reduce<string[]>((sequence, current) => {
+      const sequenceIsUnique = sequence.every(
+        (i) => sequence.filter((s) => s === i).length === 1
+      );
+      const sequenceIsAtMaxLength = sequence.length === sequenceLength;
+      if (sequenceIsAtMaxLength) {
+        if (sequenceIsUnique) return sequence;
+        sequence = sequence.slice(1);
+      }
+      return [...sequence, current];
+    }, [])
+    .join("");
 
-const getPositionOfSequence = (sequence: string[], rawInput: string) =>
-  rawInput.indexOf(sequence.join("")) + sequence.length;
+const getPositionOfSequenceInSignal = (sequence: string, rawSignal: string) =>
+  rawSignal.indexOf(sequence) + sequence.length;
 
-const rawInput = readFileSync("./input", "utf-8");
+const rawSignal = readFileSync("./input", "utf-8");
 
 console.log(
   "Answer #1: ",
-  getPositionOfSequence(detectUniqueSequence(4), rawInput)
+  getPositionOfSequenceInSignal(
+    detectSequenceOfUniqueCharacters(4, rawSignal),
+    rawSignal
+  )
 );
 
 console.log(
   "Answer #2: ",
-  getPositionOfSequence(detectUniqueSequence(14), rawInput)
+  getPositionOfSequenceInSignal(
+    detectSequenceOfUniqueCharacters(14, rawSignal),
+    rawSignal
+  )
 );
