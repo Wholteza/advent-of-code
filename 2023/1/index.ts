@@ -41,32 +41,27 @@ console.log(`Result is ${calculateResult()}`);
 console.log("End of part one\n\nStart of part two");
 
 const turnLettersIntoNumbers = (input: string): string => {
-  const replacements: { match: string; replaceWith: number }[] = [
-    { match: "one", replaceWith: 1 },
-    { match: "two", replaceWith: 2 },
-    { match: "three", replaceWith: 3 },
-    { match: "four", replaceWith: 4 },
-    { match: "five", replaceWith: 5 },
-    { match: "six", replaceWith: 6 },
-    { match: "seven", replaceWith: 7 },
-    { match: "eight", replaceWith: 8 },
-    { match: "nine", replaceWith: 9 },
-  ];
-  let lettersLeft = input;
-  let newRow = "";
-  while (lettersLeft.length) {
-    newRow += lettersLeft[0];
-    lettersLeft = lettersLeft.slice(1);
-    replacements.forEach(
-      (replacement) =>
-        (newRow = newRow.replace(
-          replacement.match,
-          replacement.replaceWith.toString()
-        ))
-    );
-    if (!lettersLeft) break;
+  const wordToNumberMap = {
+    seven: 7,
+    eight: 8,
+    three: 3,
+    four: 4,
+    five: 5,
+    nine: 9,
+    one: 1,
+    two: 2,
+    six: 6,
+  };
+  const numbersRegex = /(one|two|three|four|five|six|seven|eight|nine)/;
+  for (let i = 0; i < input.length; i++) {
+    const section = input.slice(i);
+    const match = numbersRegex.exec(section)?.[0];
+    if (!match || section.indexOf(match) !== 0) continue;
+    input = `${input.slice(0, i)}${
+      wordToNumberMap[match as keyof typeof wordToNumberMap]
+    }${input.slice(i + match.length - 1)}`;
   }
-  return newRow;
+  return input;
 };
 
 const calculateResultOfPartTwo = (fileName: string): number =>
@@ -75,14 +70,12 @@ const calculateResultOfPartTwo = (fileName: string): number =>
     .map(getTwoDigitNumberOfRow)
     .reduce((sum, current) => sum + current, 0);
 
-const partTwoTestResultsAreNotCorrect = (): boolean => {
+const runPartTwoTest = (): void => {
   const testResultsFromExercise = 281;
   const result = calculateResultOfPartTwo("test-input-b");
-  console.log(result, testResultsFromExercise);
-  return result !== testResultsFromExercise;
+  if (result !== testResultsFromExercise)
+    throw new Error(`Expected ${testResultsFromExercise}, got ${result}`);
+  console.log("Test passed!");
 };
 
-if (partTwoTestResultsAreNotCorrect())
-  throw new Error("Test results are not correct");
-console.log("Test results are correct");
 console.log(`Result is ${calculateResultOfPartTwo("input")}`);
