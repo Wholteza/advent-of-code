@@ -5,7 +5,8 @@ const digitRegex = /\d/;
 const readContentsOfFile = (relativePath: string): string =>
   fs.readFileSync(relativePath).toString();
 
-const toArrayOfRows = (text: string): string[] => text.split("\n");
+const toArrayOfRows = (text: string): string[] =>
+  text.split("\n").filter((row) => !!row);
 
 const getFirstDigit = (input: string): number => {
   const match = input.match(digitRegex);
