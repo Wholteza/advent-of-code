@@ -77,3 +77,45 @@ const result = calculatePartOneResultFromFile("input", {
   blue: 14,
 });
 console.log(`Result is: ${result}`);
+
+const sum = (powers: number[]) =>
+  powers.reduce((sum, current) => sum + current, 0);
+
+const calculatePowerOfGame = (gameData: GameData): number =>
+  gameData.red * gameData.green * gameData.blue;
+
+const toLowestPossibleAmount = (gameData: GameData[]) =>
+  gameData.reduce<GameData>(
+    (lowestGame, currentGame): GameData => {
+      return {
+        red: Math.max(lowestGame.red, currentGame.red),
+        green: Math.max(lowestGame.green, currentGame.green),
+        blue: Math.max(lowestGame.blue, currentGame.blue),
+      };
+    },
+    {
+      blue: 0,
+      green: 0,
+      red: 0,
+    }
+  );
+
+const calculatePartTwoResultFromFile = (fileName: string): number =>
+  sum(
+    readRowsOfFile(fileName)
+      .map(toNumberAndData)
+      .map((game) => toStructuredData(game.gameData))
+      .map(toLowestPossibleAmount)
+      .map(calculatePowerOfGame)
+  );
+
+const runPartTwoTest = () => {
+  const expected = 2286;
+  const result = calculatePartTwoResultFromFile("test-input-a");
+  if (result !== expected)
+    throw new Error(`Expected ${expected}, got ${result}`);
+  console.log("Test passed!");
+};
+
+runPartTwoTest();
+console.log(`Result is: ${calculatePartTwoResultFromFile("input")}`);
