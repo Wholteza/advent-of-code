@@ -31,7 +31,7 @@ const getRegionOfSquare = (
   };
   const squareYSize =
     squareAdjusedForSchematicSize[2].y - squareAdjusedForSchematicSize[1].y + 1;
-  return new Array(squareYSize)
+  const region = new Array(squareYSize)
     .fill(0)
     .map((_, index): number => squareAdjusedForSchematicSize[1].y + index)
     .map(
@@ -41,12 +41,17 @@ const getRegionOfSquare = (
           squareAdjusedForSchematicSize[2].x + 1
         )
     );
+  return region;
 };
-const toSquareWithSurroundings = (square: Square): Square => ({
-  ...square,
-  "1": { x: square[1].x - 1, y: square[1].y - 1 },
-  "2": { x: square[2].x + 1, y: square[2].y + 1 },
-});
+const toSquareWithSurroundings = (square: Square): Square => {
+  const squareWithSurroundings: Square = {
+    ...square,
+    "1": { x: square[1].x - 1, y: square[1].y - 1 },
+    "2": { x: square[2].x + 1, y: square[2].y + 1 },
+  };
+
+  return squareWithSurroundings;
+};
 
 const identifyAreasOfPartNumbers = (
   row: string,
@@ -54,12 +59,11 @@ const identifyAreasOfPartNumbers = (
 ): Square[] => {
   const squares: Square[] = [];
   for (let match of row.matchAll(/(\d+)/g)) {
-    console.log(match, match?.index, match?.[0]);
     if (!match || match.index === undefined || !match[0])
       throw new Error("Could not find area of part number");
     squares.push({
       "1": { x: match.index, y: rowIndex },
-      "2": { x: match.index + match[0].length, y: rowIndex },
+      "2": { x: match.index + match[0].length - 1, y: rowIndex },
       partNumber: Number(match[0]),
     });
   }
