@@ -24,7 +24,7 @@ class NumberMap {
   };
 }
 
-const toSeeds = (text: string | undefined): number[] => {
+const toSeedsV1 = (text: string | undefined): number[] => {
   if (!text || !text.includes("seeds"))
     throw new Error("Input does not contain seeds");
   return Array.from(text.match(/(\d+)/g) ?? []).map(Number);
@@ -39,7 +39,7 @@ const stepThroughAllMaps = (
   return { input, output };
 };
 
-const getPartOneResult = (fileName: string): number => {
+const readFileAsSeedsAndMapInput = (fileName: string) => {
   const fileText = fs.readFileSync(fileName, "utf-8");
   const rows = fileText.replace("\r\n", "\n").split("\n");
   const [unparsedSeeds, _emptyRow, ...rest] = rows;
@@ -49,7 +49,13 @@ const getPartOneResult = (fileName: string): number => {
     last.push(row);
     return [...maps, last];
   }, []);
-  const seeds = toSeeds(unparsedSeeds);
+  return { unparsedSeeds, inputGroupedByMaps };
+};
+
+const getPartOneResult = (fileName: string): number => {
+  const { inputGroupedByMaps, unparsedSeeds } =
+    readFileAsSeedsAndMapInput(fileName);
+  const seeds = toSeedsV1(unparsedSeeds);
   const maps = inputGroupedByMaps.map((rows) => new NumberMap(rows));
   const results = seeds.map((seed) => stepThroughAllMaps(seed, maps));
   const lowestOutputResult = results.reduce((closestLocation, current) =>
@@ -70,4 +76,60 @@ const runPartOneTest = () => {
 
 runPartOneTest();
 let result = getPartOneResult("input");
+console.log(`Result is: ${result}`);
+
+class SeedV2 {
+  public numbers: number[];
+  constructor(number: number, range: number) {
+    this.numbers = new Array(range)
+      .fill(number)
+      .map((value, index) => value + index);
+  }
+}
+const toSeedsV2 = (text: string | undefined): SeedV2[] => {
+  if (!text || !text.includes("seeds"))
+    throw new Error("Input does not contain seeds");
+  const numbers = Array.from(text.match(/(\d+)/g) ?? []).map(Number);
+  const seeds: SeedV2[] = [];
+  for (let i = 0; i < numbers.length; i += 2) {
+    const [number, range] = [numbers[i], numbers[i + 1]];
+    seeds.push(new SeedV2(number, range));
+  }
+  console.log(seeds);
+  return seeds;
+};
+
+const getPartTwoResult = (fileName: string): number => {
+  const { inputGroupedByMaps, unparsedSeeds } =
+    readFileAsSeedsAndMapInput(fileName);
+  const seeds = toSeedsV2(unparsedSeeds);
+  const maps = inputGroupedByMaps.map((rows) => new NumberMap(rows));
+  const lowestOutputResult = seeds.reduce<{
+    input: number;
+    output: number;
+  } | null>((closestLocation, seed) => {
+    const results = seed.numbers.map((n) => stepThroughAllMaps(n, maps));
+    const lowestOutputResult = results.reduce((closestLocation, current) =>
+      current.output < (closestLocation?.output ?? Number.MAX_VALUE)
+        ? current
+        : closestLocation
+    );
+    return lowestOutputResult.output <
+      (closestLocation?.output ?? Number.MAX_VALUE)
+      ? lowestOutputResult
+      : closestLocation;
+  }, null);
+  return lowestOutputResult?.output ?? 0;
+};
+
+const runPartTwoTest = () => {
+  const expected = 46;
+  const result = getPartTwoResult("test-input-a");
+  if (result !== expected)
+    throw new Error(`Expected ${expected}, got ${result}`);
+  console.log("Test passed!");
+};
+
+runPartTwoTest();
+result = getPartTwoResult("input");
 console.log(`Result is: ${result}`);
