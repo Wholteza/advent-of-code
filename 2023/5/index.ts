@@ -79,11 +79,17 @@ let result = getPartOneResult("input");
 console.log(`Result is: ${result}`);
 
 class SeedV2 {
-  public numbers: number[];
+  public number: number;
+  public range: number;
   constructor(number: number, range: number) {
-    this.numbers = new Array(range)
-      .fill(number)
-      .map((value, index) => value + index);
+    this.number = number;
+    this.range = range;
+  }
+
+  *getIterator() {
+    for (let i = 0; i < this.range; i++) {
+      yield this.number + i;
+    }
   }
 }
 const toSeedsV2 = (text: string | undefined): SeedV2[] => {
@@ -104,22 +110,23 @@ const getPartTwoResult = (fileName: string): number => {
     readFileAsSeedsAndMapInput(fileName);
   const seeds = toSeedsV2(unparsedSeeds);
   const maps = inputGroupedByMaps.map((rows) => new NumberMap(rows));
-  const lowestOutputResult = seeds.reduce<{
-    input: number;
-    output: number;
-  } | null>((closestLocation, seed) => {
-    const results = seed.numbers.map((n) => stepThroughAllMaps(n, maps));
-    const lowestOutputResult = results.reduce((closestLocation, current) =>
-      current.output < (closestLocation?.output ?? Number.MAX_VALUE)
-        ? current
-        : closestLocation
-    );
-    return lowestOutputResult.output <
-      (closestLocation?.output ?? Number.MAX_VALUE)
-      ? lowestOutputResult
-      : closestLocation;
-  }, null);
-  return lowestOutputResult?.output ?? 0;
+  let lowestNumber: { start: number; stop: number } = {
+    start: Number.MAX_VALUE,
+    stop: Number.MAX_VALUE,
+  };
+  for (const seed of seeds) {
+    const seedNumberIterator = seed.getIterator();
+    for (const number of seedNumberIterator) {
+      let nextNumber = number;
+      for (const map of maps) {
+        nextNumber = map.mapValue(nextNumber);
+      }
+      if (nextNumber < lowestNumber.stop) {
+        lowestNumber = { start: number, stop: nextNumber };
+      }
+    }
+  }
+  return lowestNumber.stop;
 };
 
 const runPartTwoTest = () => {
