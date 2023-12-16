@@ -1,13 +1,24 @@
 import fs from "fs";
 
 // read hands
-const readHands = (filename: string) =>
-  Array.from(
-    /(?<hand>.{5}) (?<bid>\d+)/g.exec(fs.readFileSync(filename, "utf8")) ?? []
-  )
-    .map(row) => row)
-    .forEach(console.log);
+const readHands = (filename: string): { bid: string; hand: string }[] =>
+  fs
+    .readFileSync(filename, "utf8")
+    .split("\n")
+    .map((row) => {
+      const { bid, hand } =
+        /(?<hand>.{5}) (?<bid>\d+)/m.exec(row)?.groups ?? {};
+      return { bid, hand };
+    });
 
+class Hand {
+  bid: string;
+  hand: string;
+  constructor({ bid, hand }: { bid: string; hand: string }) {
+    this.bid = bid;
+    this.hand = hand;
+  }
+}
 // Create hands
 // figure out their type
 // compare hands
