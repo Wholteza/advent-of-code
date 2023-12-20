@@ -142,12 +142,13 @@ const powerMapV2 = {
   "Five of a kind": 19,
 } as const;
 
+// Not proud of this one, but i have been stuck on this for a while and i want to move on :D
 const toTypeV2 = (hand: Hand): HandType => {
   const cardCountsRecord = hand.hand.reduce((acc, card) => {
-    if (!acc[card]) {
-      acc[card] = 1;
-    } else {
+    if (acc[card]) {
       acc[card]++;
+    } else {
+      acc[card] = 1;
     }
     return acc;
   }, {} as Record<Card, number>);
@@ -158,12 +159,28 @@ const toTypeV2 = (hand: Hand): HandType => {
       card: key,
       count: cardCountsRecord[key as Card],
     }));
+  if (cardCounts.some(({ count }) => count === 5)) {
+    return "Five of a kind";
+  }
+  if (cardCounts.some(({ count }) => count === 4)) {
+    if (jCount === 1) return "Five of a kind";
+    return "Four of a Kind";
+  }
   if (cardCounts.some(({ count }) => count === 3)) {
+    if (
+      cardCounts.some(({ count }) => count === 2) &&
+      cardCounts.some(({ count }) => count === 3)
+    )
+      return "Full House";
     if (jCount === 2) return "Five of a kind";
     if (jCount === 1) return "Four of a Kind";
     return "Three of a Kind";
   }
   if (cardCounts.some(({ count }) => count === 2)) {
+    if (cardCounts.filter(({ count }) => count === 2).length === 2) {
+      if (jCount === 1) return "Full House";
+      return "Two Pair";
+    }
     if (jCount === 3) return "Five of a kind";
     if (jCount === 2) return "Four of a Kind";
     if (jCount === 1) {
